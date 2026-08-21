@@ -5,8 +5,8 @@ import Input from '../components/Input';
 import { useERP } from '../context/ERPContext';
 
 export default function SettingsView({ onNavigate }) {
-  const { showToast, resetToMockData } = useERP();
-  const [companyName, setCompanyName] = useState('Sri Lakshmi Fabrics Pvt Ltd');
+  const { showToast, resetToMockData, clearAllData } = useERP();
+  const [companyName, setCompanyName] = useState('Prime Enterprise Pvt Ltd');
   const [gstin, setGstin] = useState('33AAACS1234F1Z9');
   const [address, setAddress] = useState('104 Cross Cut Road, Gandhipuram, Coimbatore');
   const [currency, setCurrency] = useState('₹ (INR)');
@@ -21,7 +21,7 @@ export default function SettingsView({ onNavigate }) {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="pb-2 border-b border-slate-200">
         <h1 className="text-xl font-bold text-slate-900 tracking-tight">System Settings</h1>
-        <p className="text-xs text-slate-500 mt-0.5">Configure company profile, GST defaults, and LocalStorage data flow</p>
+        <p className="text-xs text-slate-500 mt-0.5">Configure company profile, GST defaults, and database persistence settings</p>
       </div>
 
       <div className="bg-white border border-slate-200/80 rounded-xl p-6 shadow-2xs space-y-4 text-xs">
@@ -54,21 +54,27 @@ export default function SettingsView({ onNavigate }) {
       </div>
 
       <div className="bg-white border border-slate-200/80 rounded-xl p-6 shadow-2xs space-y-4 text-xs">
-        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">LocalStorage Data Persistence</h3>
+        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">Database Persistence & Data Clearing</h3>
 
         <div className="flex items-center justify-between p-3.5 rounded-lg border border-slate-200 bg-slate-50">
           <div>
-            <h4 className="font-bold text-slate-900">Browser LocalStorage Active</h4>
-            <p className="text-slate-500 text-[11px] mt-0.5">All parties, POs, GRNs, FIFO batch movements, and sales invoices are automatically persisted to window.localStorage.</p>
+            <h4 className="font-bold text-slate-900">Database & LocalStorage Sync Active</h4>
+            <p className="text-slate-500 text-[11px] mt-0.5">All user-created Item Types, Brands, Categories, Products, Parties, POs, and Invoices are automatically saved and persisted.</p>
           </div>
-          <span className="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">Persisted</span>
+          <span className="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">Save Enabled</span>
         </div>
 
-        <div className="pt-2 flex items-center justify-between">
-          <Button variant="danger" size="md" onClick={resetToMockData}>
-            <Icon name="RotateCcw" className="w-4 h-4" />
-            Reset to Fresh Mock Data
-          </Button>
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Button variant="danger" size="md" onClick={clearAllData}>
+              <Icon name="Trash2" className="w-4 h-4" />
+              Clear Mock Data (Clean Slate)
+            </Button>
+            <Button variant="secondary" size="md" onClick={resetToMockData}>
+              <Icon name="RotateCcw" className="w-4 h-4" />
+              Reset Sample Dataset
+            </Button>
+          </div>
           <Button variant="primary" size="md" onClick={handleSaveSettings}>Save Profile Changes</Button>
         </div>
       </div>

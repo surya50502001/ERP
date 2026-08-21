@@ -6,6 +6,19 @@ const INITIAL_ERP_DATA = {
     { id: 'PTY-104', name: 'XYZ Textiles', type: 'Customer', phone: '+91 98250 45678', email: 'purchasing@xyztextiles.com', location: 'Surat, Gujarat', gstin: '24AABX3456J4Z4', address: '702 Ring Road Market', country: 'India', state: 'Gujarat', status: 'Active' },
     { id: 'PTY-105', name: 'Fashion Crafters', type: 'Customer', phone: '+91 98200 56789', email: 'accounts@fashioncrafters.in', location: 'Mumbai, Maharashtra', gstin: '27AAAC9876K5Z5', address: '18 Lower Parel West', country: 'India', state: 'Maharashtra', status: 'Active' }
   ],
+  itemTypes: [
+    { id: 'IT-01', name: 'Raw Material', code: 'RM' },
+    { id: 'IT-02', name: 'Finished Goods', code: 'FG' },
+    { id: 'IT-03', name: 'Semi-Finished Goods', code: 'SFG' },
+    { id: 'IT-04', name: 'Packing Material', code: 'PM' },
+    { id: 'IT-05', name: 'Trading Goods', code: 'TG' },
+    { id: 'IT-06', name: 'Services', code: 'SRV' }
+  ],
+  brands: [
+    { id: 'BR-01', name: 'Generic' },
+    { id: 'BR-02', name: 'Prime Quality' },
+    { id: 'BR-03', name: 'Eco Line' }
+  ],
   categories: {
     major: [
       { id: 'MJ-01', name: 'Yarn', code: 'YRN' },
@@ -38,8 +51,8 @@ const INITIAL_ERP_DATA = {
     { country: 'United States', code: 'US', states: ['California', 'Texas', 'New York', 'North Carolina'] }
   ],
   products: [
-    { id: 'PRD-001', name: 'Cotton Yarn 40s Combed', uom: 'KG', majorGroup: 'Yarn', subGroup: 'Cotton Yarn', subSubGroup: 'Combed Cotton', availableStock: 180, minReorderLevel: 50, avgRate: 210, stockValue: 37800, hsnCode: '52051210', gstRate: 5, status: 'Active', description: 'Premium quality 40s combed cotton yarn.' },
-    { id: 'PRD-002', name: 'Polyester Yarn 150D/48F', uom: 'KG', majorGroup: 'Yarn', subGroup: 'Synthetic Yarn', subSubGroup: 'Polyester Filament', availableStock: 125, minReorderLevel: 30, avgRate: 160, stockValue: 20000, hsnCode: '54023300', gstRate: 12, status: 'Active', description: 'Textured polyester yarn.' }
+    { id: 'PRD-001', name: 'Cotton Yarn 40s Combed', uom: 'KG', itemType: 'Raw Material', brand: 'Generic', majorGroup: 'Yarn', subGroup: 'Cotton Yarn', subSubGroup: 'Combed Cotton', availableStock: 180, minReorderLevel: 50, avgRate: 210, stockValue: 37800, hsnCode: '52051210', gstRate: 5, status: 'Active', description: 'Premium quality 40s combed cotton yarn.' },
+    { id: 'PRD-002', name: 'Polyester Yarn 150D/48F', uom: 'KG', itemType: 'Raw Material', brand: 'Generic', majorGroup: 'Yarn', subGroup: 'Synthetic Yarn', subSubGroup: 'Polyester Filament', availableStock: 125, minReorderLevel: 30, avgRate: 160, stockValue: 20000, hsnCode: '54023300', gstRate: 12, status: 'Active', description: 'Textured polyester yarn.' }
   ],
   batches: {
     'PRD-001': [{ batchNo: 'B001', receivedDate: '2026-08-10', initialQty: 180, availableQty: 180, rate: 210, grnId: 'GRN-1090' }],
@@ -92,6 +105,51 @@ const INITIAL_ERP_DATA = {
   ]
 };
 
+const EMPTY_ERP_DATA = {
+  parties: [],
+  itemTypes: [
+    { id: 'IT-01', name: 'Raw Material', code: 'RM' },
+    { id: 'IT-02', name: 'Finished Goods', code: 'FG' },
+    { id: 'IT-03', name: 'Semi-Finished Goods', code: 'SFG' },
+    { id: 'IT-04', name: 'Packing Material', code: 'PM' },
+    { id: 'IT-05', name: 'Trading Goods', code: 'TG' },
+    { id: 'IT-06', name: 'Services', code: 'SRV' }
+  ],
+  brands: [
+    { id: 'BR-01', name: 'Generic' }
+  ],
+  categories: {
+    major: [
+      { id: 'MJ-01', name: 'Yarn', code: 'YRN' },
+      { id: 'MJ-02', name: 'Fabric', code: 'FBC' },
+      { id: 'MJ-03', name: 'Trims & Accessories', code: 'TRM' }
+    ],
+    sub: [
+      { id: 'SB-01', majorId: 'MJ-01', name: 'Cotton Yarn' },
+      { id: 'SB-02', majorId: 'MJ-01', name: 'Synthetic Yarn' }
+    ],
+    subSub: [
+      { id: 'SSB-01', subId: 'SB-01', name: 'Combed Cotton' }
+    ]
+  },
+  uoms: [
+    { id: 'UOM-01', code: 'KG', name: 'Kilograms', decimalPlaces: 2 },
+    { id: 'UOM-02', code: 'MTR', name: 'Meters', decimalPlaces: 2 },
+    { id: 'UOM-03', code: 'PCS', name: 'Pieces', decimalPlaces: 0 },
+    { id: 'UOM-04', code: 'RLL', name: 'Rolls', decimalPlaces: 0 },
+    { id: 'UOM-05', code: 'BOX', name: 'Boxes', decimalPlaces: 0 }
+  ],
+  locations: [
+    { country: 'India', code: 'IN', states: ['Tamil Nadu', 'Gujarat', 'Maharashtra', 'Karnataka', 'Punjab', 'West Bengal', 'Rajasthan'] }
+  ],
+  products: [],
+  batches: {},
+  purchaseOrders: [],
+  salesInvoices: [],
+  recentActivities: [],
+  notifications: []
+};
+
 window.ERP_MOCK_DATA = INITIAL_ERP_DATA;
 
 export const ERPContext = createContext();
@@ -102,7 +160,10 @@ function loadInitialState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && Array.isArray(parsed.salesInvoices) && parsed.salesInvoices.length > 0) {
+      if (parsed && typeof parsed === 'object') {
+        if (!parsed.itemTypes) parsed.itemTypes = INITIAL_ERP_DATA.itemTypes;
+        if (!parsed.brands) parsed.brands = INITIAL_ERP_DATA.brands;
+        if (!parsed.categories) parsed.categories = INITIAL_ERP_DATA.categories;
         return parsed;
       }
     }
@@ -126,6 +187,10 @@ function erpReducer(state, action) {
   switch (action.type) {
     case 'RESET_DATA': {
       newState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
+      break;
+    }
+    case 'CLEAR_ALL_DATA': {
+      newState = JSON.parse(JSON.stringify(EMPTY_ERP_DATA));
       break;
     }
     case 'ADD_PARTY': {
@@ -399,6 +464,135 @@ function erpReducer(state, action) {
       };
       break;
     }
+    case 'ADD_ITEM_TYPE': {
+      const newItemType = {
+        id: `IT-${Date.now()}`,
+        name: action.payload.name,
+        code: action.payload.code || action.payload.name.substring(0, 3).toUpperCase()
+      };
+      newState = { ...state, itemTypes: [...(state.itemTypes || []), newItemType] };
+      break;
+    }
+    case 'DELETE_ITEM_TYPE': {
+      newState = {
+        ...state,
+        itemTypes: (state.itemTypes || []).filter(it => it.id !== action.payload && it.name !== action.payload)
+      };
+      break;
+    }
+    case 'ADD_BRAND': {
+      const newBrand = {
+        id: `BR-${Date.now()}`,
+        name: action.payload.name
+      };
+      newState = { ...state, brands: [...(state.brands || []), newBrand] };
+      break;
+    }
+    case 'DELETE_BRAND': {
+      newState = {
+        ...state,
+        brands: (state.brands || []).filter(b => b.id !== action.payload && b.name !== action.payload)
+      };
+      break;
+    }
+    case 'ADD_MAJOR_CATEGORY': {
+      const newMaj = {
+        id: `MJ-${Date.now()}`,
+        name: action.payload.name,
+        code: action.payload.code || action.payload.name.substring(0, 3).toUpperCase()
+      };
+      const cat = state.categories || { major: [], sub: [], subSub: [] };
+      newState = {
+        ...state,
+        categories: {
+          ...cat,
+          major: [...(cat.major || []), newMaj]
+        }
+      };
+      break;
+    }
+    case 'DELETE_MAJOR_CATEGORY': {
+      const cat = state.categories || { major: [], sub: [], subSub: [] };
+      newState = {
+        ...state,
+        categories: {
+          ...cat,
+          major: (cat.major || []).filter(m => m.id !== action.payload && m.name !== action.payload)
+        }
+      };
+      break;
+    }
+    case 'ADD_SUB_CATEGORY': {
+      const newSub = {
+        id: `SB-${Date.now()}`,
+        majorId: action.payload.majorId,
+        name: action.payload.name
+      };
+      const cat = state.categories || { major: [], sub: [], subSub: [] };
+      newState = {
+        ...state,
+        categories: {
+          ...cat,
+          sub: [...(cat.sub || []), newSub]
+        }
+      };
+      break;
+    }
+    case 'DELETE_SUB_CATEGORY': {
+      const cat = state.categories || { major: [], sub: [], subSub: [] };
+      newState = {
+        ...state,
+        categories: {
+          ...cat,
+          sub: (cat.sub || []).filter(s => s.id !== action.payload && s.name !== action.payload)
+        }
+      };
+      break;
+    }
+    case 'ADD_SUB_SUB_CATEGORY': {
+      const newSubSub = {
+        id: `SSB-${Date.now()}`,
+        subId: action.payload.subId,
+        name: action.payload.name
+      };
+      const cat = state.categories || { major: [], sub: [], subSub: [] };
+      newState = {
+        ...state,
+        categories: {
+          ...cat,
+          subSub: [...(cat.subSub || []), newSubSub]
+        }
+      };
+      break;
+    }
+    case 'DELETE_SUB_SUB_CATEGORY': {
+      const cat = state.categories || { major: [], sub: [], subSub: [] };
+      newState = {
+        ...state,
+        categories: {
+          ...cat,
+          subSub: (cat.subSub || []).filter(ss => ss.id !== action.payload && ss.name !== action.payload)
+        }
+      };
+      break;
+    }
+    case 'ADD_UOM': {
+      const newUom = {
+        id: `UOM-${Date.now()}`,
+        code: action.payload.code.toUpperCase(),
+        name: action.payload.name,
+        decimalPlaces: parseInt(action.payload.decimalPlaces || 0, 10)
+      };
+      newState = { ...state, uoms: [...(state.uoms || []), newUom] };
+      break;
+    }
+    case 'DELETE_UOM': {
+      newState = {
+        ...state,
+        uoms: (state.uoms || []).filter(u => u.id !== action.payload && u.code !== action.payload)
+      };
+      break;
+    }
     default:
       return state;
   }
@@ -440,6 +634,11 @@ export function ERPProvider({ children }) {
     showToast('Data Restored', 'Restored sample dataset.');
   };
 
+  const clearAllData = () => {
+    dispatch({ type: 'CLEAR_ALL_DATA' });
+    showToast('Mock Data Cleared', 'Mock data cleared. Operating on clean slate.');
+  };
+
   const addParty = (partyData) => {
     dispatch({ type: 'ADD_PARTY', payload: partyData });
     showToast('Party Created', `${partyData.name} created.`);
@@ -475,12 +674,73 @@ export function ERPProvider({ children }) {
     showToast('Invoice Rejected', `Invoice ${invoiceId} rejected.`, 'error');
   };
 
+  const addItemType = (name, code) => {
+    dispatch({ type: 'ADD_ITEM_TYPE', payload: { name, code } });
+    showToast('Item Type Created', `Item type "${name}" created.`);
+  };
+
+  const deleteItemType = (id) => {
+    dispatch({ type: 'DELETE_ITEM_TYPE', payload: id });
+    showToast('Item Type Removed', `Item type deleted.`);
+  };
+
+  const addBrand = (name) => {
+    dispatch({ type: 'ADD_BRAND', payload: { name } });
+    showToast('Brand Created', `Brand "${name}" created.`);
+  };
+
+  const deleteBrand = (id) => {
+    dispatch({ type: 'DELETE_BRAND', payload: id });
+    showToast('Brand Removed', `Brand deleted.`);
+  };
+
+  const addMajorCategory = (name, code) => {
+    dispatch({ type: 'ADD_MAJOR_CATEGORY', payload: { name, code } });
+    showToast('Major Group Created', `Major group "${name}" created.`);
+  };
+
+  const deleteMajorCategory = (id) => {
+    dispatch({ type: 'DELETE_MAJOR_CATEGORY', payload: id });
+    showToast('Major Group Removed', `Major group deleted.`);
+  };
+
+  const addSubCategory = (majorId, name) => {
+    dispatch({ type: 'ADD_SUB_CATEGORY', payload: { majorId, name } });
+    showToast('Sub Group Created', `Sub group "${name}" created.`);
+  };
+
+  const deleteSubCategory = (id) => {
+    dispatch({ type: 'DELETE_SUB_CATEGORY', payload: id });
+    showToast('Sub Group Removed', `Sub group deleted.`);
+  };
+
+  const addSubSubCategory = (subId, name) => {
+    dispatch({ type: 'ADD_SUB_SUB_CATEGORY', payload: { subId, name } });
+    showToast('Sub-Sub Group Created', `Sub-Sub group "${name}" created.`);
+  };
+
+  const deleteSubSubCategory = (id) => {
+    dispatch({ type: 'DELETE_SUB_SUB_CATEGORY', payload: id });
+    showToast('Sub-Sub Group Removed', `Sub-Sub group deleted.`);
+  };
+
+  const addUOM = (code, name, decimalPlaces = 2) => {
+    dispatch({ type: 'ADD_UOM', payload: { code, name, decimalPlaces } });
+    showToast('UOM Created', `Unit "${code}" created.`);
+  };
+
+  const deleteUOM = (id) => {
+    dispatch({ type: 'DELETE_UOM', payload: id });
+    showToast('UOM Removed', `UOM deleted.`);
+  };
+
   const value = {
     state,
     toasts,
     showToast,
     removeToast,
     resetToMockData,
+    clearAllData,
     addParty,
     addProduct,
     createPurchaseOrder,
@@ -488,6 +748,18 @@ export function ERPProvider({ children }) {
     createSalesInvoice,
     approveInvoice,
     rejectInvoice,
+    addItemType,
+    deleteItemType,
+    addBrand,
+    deleteBrand,
+    addMajorCategory,
+    deleteMajorCategory,
+    addSubCategory,
+    deleteSubCategory,
+    addSubSubCategory,
+    deleteSubSubCategory,
+    addUOM,
+    deleteUOM,
     isCmdPaletteOpen,
     setIsCmdPaletteOpen,
     sidebarCollapsed,

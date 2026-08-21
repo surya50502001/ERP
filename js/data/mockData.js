@@ -8,6 +8,21 @@ window.ERP_MOCK_DATA = {
     { id: 'PTY-106', name: 'Garment Matrix', type: 'Both', phone: '+91 98450 67890', email: 'contact@garmentmatrix.io', location: 'Bengaluru, Karnataka', gstin: '29AABG7890L6Z6', address: '88 Peenya Industrial Area', country: 'India', state: 'Karnataka', status: 'Active' }
   ],
 
+  itemTypes: [
+    { id: 'IT-01', name: 'Raw Material', code: 'RM' },
+    { id: 'IT-02', name: 'Finished Goods', code: 'FG' },
+    { id: 'IT-03', name: 'Semi-Finished Goods', code: 'SFG' },
+    { id: 'IT-04', name: 'Packing Material', code: 'PM' },
+    { id: 'IT-05', name: 'Trading Goods', code: 'TG' },
+    { id: 'IT-06', name: 'Services', code: 'SRV' }
+  ],
+
+  brands: [
+    { id: 'BR-01', name: 'Generic' },
+    { id: 'BR-02', name: 'Prime Quality' },
+    { id: 'BR-03', name: 'Eco Line' }
+  ],
+
   categories: {
     major: [
       { id: 'MJ-01', name: 'Yarn', code: 'YRN' },
