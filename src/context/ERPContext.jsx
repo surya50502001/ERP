@@ -522,19 +522,38 @@ export function ERPProvider({ children }) {
     }
   });
 
+  const safeParse = async (r) => {
+    const text = await r.text();
+    try {
+      return text ? JSON.parse(text) : {};
+    } catch (e) {
+      return {};
+    }
+  };
+
   useEffect(() => {
     if (!currentUser) return;
     
     const fetchAllData = async () => {
       try {
+        const safeJson = async (r) => {
+          if (!r.ok) return [];
+          const text = await r.text();
+          try {
+            return text ? JSON.parse(text) : [];
+          } catch (e) {
+            return [];
+          }
+        };
+
         const [parties, products, brands, uoms, itemTypes, pos, invs] = await Promise.all([
-          fetch('/api/parties').then(r => r.ok ? r.json() : []),
-          fetch('/api/products').then(r => r.ok ? r.json() : []),
-          fetch('/api/brands').then(r => r.ok ? r.json() : []),
-          fetch('/api/uoms').then(r => r.ok ? r.json() : []),
-          fetch('/api/itemtypes').then(r => r.ok ? r.json() : []),
-          fetch('/api/purchaseorders').then(r => r.ok ? r.json() : []),
-          fetch('/api/salesinvoices').then(r => r.ok ? r.json() : [])
+          fetch('/api/parties').then(safeJson),
+          fetch('/api/products').then(safeJson),
+          fetch('/api/brands').then(safeJson),
+          fetch('/api/uoms').then(safeJson),
+          fetch('/api/itemtypes').then(safeJson),
+          fetch('/api/purchaseorders').then(safeJson),
+          fetch('/api/salesinvoices').then(safeJson)
         ]);
 
         dispatch({ type: 'SET_ALL_DATA', payload: { parties, products, brands, uoms, itemTypes, purchaseOrders: pos, salesInvoices: invs } });
@@ -553,9 +572,14 @@ export function ERPProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Login failed');
-
+      
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
+      
+      if (!res.ok) {
+        throw new Error(data.message || `Login failed (Status ${res.status})`);
+      }
+      
       const userObj = { id: data.id, fullName: data.fullName, companyName: data.companyName || 'My Enterprise', email: data.email, role: data.role, token: data.token };
       setCurrentUser(userObj);
       localStorage.setItem('PRIME_ERP_USER', JSON.stringify(userObj));
@@ -575,8 +599,13 @@ export function ERPProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fullName, email, password, role, companyName })
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Registration failed');
+      
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
+      
+      if (!res.ok) {
+        throw new Error(data.message || `Registration failed (Status ${res.status})`);
+      }
 
       const userObj = { id: data.id, fullName: data.fullName, companyName: data.companyName || companyName || 'My Enterprise', email: data.email, role: data.role, token: data.token };
       setCurrentUser(userObj);
@@ -607,11 +636,11 @@ export function ERPProvider({ children }) {
         body: JSON.stringify(partyData)
       });
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        showToast('Creation Failed', errData.message || 'Server rejected party creation.', 'error');
+        const errData = await safeParse(res);
+        showToast('Creation Failed', errData.message || 'Server error.', 'error');
         return { success: false };
       }
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_PARTY', payload: saved });
       showToast('Party Created', `${saved.name || partyData.name} created.`, 'success');
       return { success: true, party: saved };
@@ -629,11 +658,11 @@ export function ERPProvider({ children }) {
         body: JSON.stringify(productData)
       });
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        showToast('Creation Failed', errData.message || 'Server rejected product creation.', 'error');
+        const errData = await safeParse(res);
+        showToast('Creation Failed', errData.message || 'Server error.', 'error');
         return { success: false };
       }
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_PRODUCT', payload: saved });
       showToast('Product Created', `${saved.name || productData.name} created.`, 'success');
       return { success: true, product: saved };
@@ -651,11 +680,11 @@ export function ERPProvider({ children }) {
         body: JSON.stringify(poData)
       });
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
+        const errData = await safeParse(res);
         showToast('PO Creation Failed', errData.message || 'Server rejected purchase order.', 'error');
         return { success: false };
       }
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'CREATE_PO', payload: saved });
       showToast('PO Generated', `Purchase Order ${saved.poId || ''} generated successfully.`, 'success');
       return { success: true, po: saved };
@@ -678,11 +707,11 @@ export function ERPProvider({ children }) {
         body: JSON.stringify(invData)
       });
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        showToast('Invoice Creation Failed', errData.message || 'Server rejected sales invoice.', 'error');
+        const errData = await safeParse(res);
+        showToast('Invoice Creation Failed', errData.message || 'Server error.', 'error');
         return { success: false };
       }
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'CREATE_INVOICE', payload: saved });
       showToast('Invoice Submitted', `Invoice ${saved.invoiceId || ''} created and submitted for approval.`, 'success');
       return { success: true, invoice: saved };
@@ -696,7 +725,7 @@ export function ERPProvider({ children }) {
     try {
       const res = await fetch(`/api/salesinvoices/${invoiceId}/approve`, { method: 'PUT' });
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
+        const errData = await safeParse(res).catch(() => ({}));
         showToast('Approval Failed', errData.message || 'Failed to approve invoice.', 'error');
         return { success: false };
       }
@@ -727,7 +756,7 @@ export function ERPProvider({ children }) {
         body: JSON.stringify({ name, code })
       });
       if (!res.ok) throw new Error('Server error');
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_ITEM_TYPE', payload: saved });
       showToast('Item Type Created', `Item type "${name}" created.`);
     } catch (err) {
@@ -754,7 +783,7 @@ export function ERPProvider({ children }) {
         body: JSON.stringify({ name })
       });
       if (!res.ok) throw new Error('Server error');
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_BRAND', payload: saved });
       showToast('Brand Created', `Brand "${name}" created.`);
     } catch (err) {
@@ -781,7 +810,7 @@ export function ERPProvider({ children }) {
         body: JSON.stringify({ name, code })
       });
       if (!res.ok) throw new Error('Server error');
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_MAJOR_CATEGORY', payload: saved });
       showToast('Major Group Created', `Major group "${name}" created.`);
     } catch (err) {
@@ -808,7 +837,7 @@ export function ERPProvider({ children }) {
         body: JSON.stringify({ majorCategoryId: parseInt(majorId), name })
       });
       if (!res.ok) throw new Error('Server error');
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_SUB_CATEGORY', payload: saved });
       showToast('Sub Group Created', `Sub group "${name}" created.`);
     } catch (err) {
@@ -835,7 +864,7 @@ export function ERPProvider({ children }) {
         body: JSON.stringify({ subCategoryId: parseInt(subId), name })
       });
       if (!res.ok) throw new Error('Server error');
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_SUB_SUB_CATEGORY', payload: saved });
       showToast('Sub-Sub Group Created', `Sub-Sub group "${name}" created.`);
     } catch (err) {
@@ -862,7 +891,7 @@ export function ERPProvider({ children }) {
         body: JSON.stringify({ code, name, decimalPlaces })
       });
       if (!res.ok) throw new Error('Server error');
-      const saved = await res.json();
+      const saved = await safeParse(res);
       dispatch({ type: 'ADD_UOM', payload: saved });
       showToast('UOM Created', `Unit "${code}" created.`);
     } catch (err) {
