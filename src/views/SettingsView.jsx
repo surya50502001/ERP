@@ -5,8 +5,8 @@ import Input from '../components/Input';
 import { useERP } from '../context/ERPContext';
 
 export default function SettingsView({ onNavigate }) {
-  const { showToast, resetToMockData, clearAllData } = useERP();
-  const [companyName, setCompanyName] = useState('Prime Enterprise Pvt Ltd');
+  const { currentUser, showToast, resetToMockData, clearAllData } = useERP();
+  const [companyName, setCompanyName] = useState(currentUser?.companyName || 'My Enterprise');
   const [gstin, setGstin] = useState('33AAACS1234F1Z9');
   const [address, setAddress] = useState('104 Cross Cut Road, Gandhipuram, Coimbatore');
   const [currency, setCurrency] = useState('₹ (INR)');
@@ -58,22 +58,14 @@ export default function SettingsView({ onNavigate }) {
 
         <div className="flex items-center justify-between p-3.5 rounded-lg border border-slate-200 bg-slate-50">
           <div>
-            <h4 className="font-bold text-slate-900">Database & LocalStorage Sync Active</h4>
-            <p className="text-slate-500 text-[11px] mt-0.5">All user-created Item Types, Brands, Categories, Products, Parties, POs, and Invoices are automatically saved and persisted.</p>
+            <h4 className="font-bold text-slate-900">Database Connected</h4>
+            <p className="text-slate-500 text-[11px] mt-0.5">All data is securely persisted to the PostgreSQL database.</p>
           </div>
-          <span className="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">Save Enabled</span>
+          <span className="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">PostgreSQL Connected</span>
         </div>
 
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Button variant="danger" size="md" onClick={clearAllData}>
-              <Icon name="Trash2" className="w-4 h-4" />
-              Clear Mock Data (Clean Slate)
-            </Button>
-            <Button variant="secondary" size="md" onClick={resetToMockData}>
-              <Icon name="RotateCcw" className="w-4 h-4" />
-              Reset Sample Dataset
-            </Button>
+          <div className="flex gap-3">
           </div>
           <Button variant="primary" size="md" onClick={handleSaveSettings}>Save Profile Changes</Button>
         </div>

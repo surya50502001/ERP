@@ -349,7 +349,7 @@ export default function PurchasesView({ onNavigate }) {
                 </div>
                 <div>
                   <span className="text-slate-400 font-semibold block uppercase text-[10px]">Expected Delivery</span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">{currentPO.expectedDate || '2026-08-25'}</span>
+                  <span className="font-semibold text-slate-800 mt-0.5 block">{currentPO.expectedDate || 'N/A'}</span>
                 </div>
                 <div>
                   <span className="text-slate-400 font-semibold block uppercase text-[10px]">GRN Status</span>
@@ -358,7 +358,7 @@ export default function PurchasesView({ onNavigate }) {
               </div>
               <div className="pt-3 border-t border-slate-100 text-xs">
                 <span className="text-slate-400 font-semibold block uppercase text-[10px]">Delivery Notes</span>
-                <p className="text-slate-600 mt-1 leading-relaxed">{currentPO.notes || 'Standard logistics delivery terms.'}</p>
+                <p className="text-slate-600 mt-1 leading-relaxed">{currentPO.notes || 'N/A'}</p>
               </div>
             </div>
 

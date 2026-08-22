@@ -56,17 +56,14 @@
 
         React.createElement('div', { className: 'flex items-center justify-between p-3.5 rounded-lg border border-slate-200 bg-slate-50' },
           React.createElement('div', null,
-            React.createElement('h4', { className: 'font-bold text-slate-900' }, 'Browser LocalStorage Active'),
-            React.createElement('p', { className: 'text-slate-500 text-[11px] mt-0.5' }, 'All parties, POs, GRNs, FIFO batch movements, and sales invoices are automatically persisted to window.localStorage.')
+            React.createElement('h4', { className: 'font-bold text-slate-900' }, 'Database Connected'),
+            React.createElement('p', { className: 'text-slate-500 text-[11px] mt-0.5' }, 'All data is securely persisted to the PostgreSQL database.')
           ),
           React.createElement('span', { className: 'px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase' }, 'Persisted')
         ),
 
         React.createElement('div', { className: 'pt-2 flex items-center justify-between' },
-          React.createElement(window.Button, { variant: 'danger', size: 'md', onClick: resetToMockData },
-            React.createElement(window.Icon, { name: 'RotateCcw', className: 'w-4 h-4' }),
-            'Reset to Fresh Mock Data'
-          ),
+          React.createElement('div', { className: 'flex gap-3' }),
           React.createElement(window.Button, { variant: 'primary', size: 'md', onClick: handleSaveSettings }, 'Save Profile Changes')
         )
       )

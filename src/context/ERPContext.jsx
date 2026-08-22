@@ -1,147 +1,27 @@
 import React, { createContext, useContext, useState, useEffect, useReducer } from 'react';
 
 const INITIAL_ERP_DATA = {
-  parties: [
-    { id: 'PTY-101', name: 'ABC Traders', type: 'Supplier', phone: '+91 98421 12345', email: 'orders@abctraders.in', location: 'Coimbatore, Tamil Nadu', gstin: '33AAAC1234F1Z1', address: '104 Cross Cut Road, Gandhipuram', country: 'India', state: 'Tamil Nadu', status: 'Active' },
-    { id: 'PTY-104', name: 'XYZ Textiles', type: 'Customer', phone: '+91 98250 45678', email: 'purchasing@xyztextiles.com', location: 'Surat, Gujarat', gstin: '24AABX3456J4Z4', address: '702 Ring Road Market', country: 'India', state: 'Gujarat', status: 'Active' },
-    { id: 'PTY-105', name: 'Fashion Crafters', type: 'Customer', phone: '+91 98200 56789', email: 'accounts@fashioncrafters.in', location: 'Mumbai, Maharashtra', gstin: '27AAAC9876K5Z5', address: '18 Lower Parel West', country: 'India', state: 'Maharashtra', status: 'Active' }
-  ],
-  itemTypes: [
-    { id: 'IT-01', name: 'Raw Material', code: 'RM' },
-    { id: 'IT-02', name: 'Finished Goods', code: 'FG' },
-    { id: 'IT-03', name: 'Semi-Finished Goods', code: 'SFG' },
-    { id: 'IT-04', name: 'Packing Material', code: 'PM' },
-    { id: 'IT-05', name: 'Trading Goods', code: 'TG' },
-    { id: 'IT-06', name: 'Services', code: 'SRV' }
-  ],
-  brands: [
-    { id: 'BR-01', name: 'Generic' },
-    { id: 'BR-02', name: 'Prime Quality' },
-    { id: 'BR-03', name: 'Eco Line' }
-  ],
-  categories: {
-    major: [
-      { id: 'MJ-01', name: 'Yarn', code: 'YRN' },
-      { id: 'MJ-02', name: 'Fabric', code: 'FBC' },
-      { id: 'MJ-03', name: 'Trims & Accessories', code: 'TRM' }
-    ],
-    sub: [
-      { id: 'SB-01', majorId: 'MJ-01', name: 'Cotton Yarn' },
-      { id: 'SB-02', majorId: 'MJ-01', name: 'Synthetic Yarn' },
-      { id: 'SB-03', majorId: 'MJ-02', name: 'Knitted Fabric' },
-      { id: 'SB-04', majorId: 'MJ-02', name: 'Woven Fabric' }
-    ],
-    subSub: [
-      { id: 'SSB-01', subId: 'SB-01', name: 'Combed Cotton' },
-      { id: 'SSB-02', subId: 'SB-01', name: 'Carded Cotton' },
-      { id: 'SSB-03', subId: 'SB-02', name: 'Polyester Filament' },
-      { id: 'SSB-04', subId: 'SB-03', name: 'Single Jersey' }
-    ]
-  },
-  uoms: [
-    { id: 'UOM-01', code: 'KG', name: 'Kilograms', decimalPlaces: 2 },
-    { id: 'UOM-02', code: 'MTR', name: 'Meters', decimalPlaces: 2 },
-    { id: 'UOM-03', code: 'PCS', name: 'Pieces', decimalPlaces: 0 },
-    { id: 'UOM-04', code: 'RLL', name: 'Rolls', decimalPlaces: 0 },
-    { id: 'UOM-05', code: 'BOX', name: 'Boxes', decimalPlaces: 0 }
-  ],
-  locations: [
-    { country: 'India', code: 'IN', states: ['Tamil Nadu', 'Gujarat', 'Maharashtra', 'Karnataka', 'Punjab', 'West Bengal', 'Rajasthan'] },
-    { country: 'United Arab Emirates', code: 'AE', states: ['Dubai', 'Abu Dhabi', 'Sharjah'] },
-    { country: 'United States', code: 'US', states: ['California', 'Texas', 'New York', 'North Carolina'] }
-  ],
-  products: [
-    { id: 'PRD-001', name: 'Cotton Yarn 40s Combed', uom: 'KG', itemType: 'Raw Material', brand: 'Generic', majorGroup: 'Yarn', subGroup: 'Cotton Yarn', subSubGroup: 'Combed Cotton', availableStock: 180, minReorderLevel: 50, avgRate: 210, stockValue: 37800, hsnCode: '52051210', gstRate: 5, status: 'Active', description: 'Premium quality 40s combed cotton yarn.' },
-    { id: 'PRD-002', name: 'Polyester Yarn 150D/48F', uom: 'KG', itemType: 'Raw Material', brand: 'Generic', majorGroup: 'Yarn', subGroup: 'Synthetic Yarn', subSubGroup: 'Polyester Filament', availableStock: 125, minReorderLevel: 30, avgRate: 160, stockValue: 20000, hsnCode: '54023300', gstRate: 12, status: 'Active', description: 'Textured polyester yarn.' }
-  ],
-  batches: {
-    'PRD-001': [{ batchNo: 'B001', receivedDate: '2026-08-10', initialQty: 180, availableQty: 180, rate: 210, grnId: 'GRN-1090' }],
-    'PRD-002': [{ batchNo: 'B002', receivedDate: '2026-08-12', initialQty: 125, availableQty: 125, rate: 160, grnId: 'GRN-1085' }]
-  },
-  purchaseOrders: [
-    {
-      id: 'PO-1042', supplierId: 'PTY-101', supplierName: 'ABC Traders', date: '2026-08-20', expectedDate: '2026-08-25', status: 'Received', itemsCount: 2, totalAmount: 42500, grnId: 'GRN-1092', grnDate: '2026-08-20', notes: 'Standard delivery via VRL Logistics.',
-      items: [{ productId: 'PRD-001', productName: 'Cotton Yarn 40s Combed', qty: 100, uom: 'KG', rate: 210, amount: 21000 }],
-      activity: [{ date: '2026-08-20 09:30', user: 'Admin', title: 'PO Created', detail: 'Purchase order PO-1042 issued.' }]
-    }
-  ],
-  salesInvoices: [
-    {
-      id: 'INV-2081',
-      customerId: 'PTY-104',
-      customerName: 'XYZ Textiles',
-      date: '2026-08-20',
-      dueDate: '2026-09-04',
-      status: 'Pending Approval',
-      itemsCount: 2,
-      subtotal: 49500,
-      tax: 2475,
-      totalAmount: 51975,
-      items: [
-        { productId: 'PRD-001', productName: 'Cotton Yarn 40s Combed', qty: 50, uom: 'KG', rate: 230, amount: 11500 }
-      ]
-    },
-    {
-      id: 'INV-2082',
-      customerId: 'PTY-105',
-      customerName: 'Fashion Crafters',
-      date: '2026-08-19',
-      dueDate: '2026-09-03',
-      status: 'Pending Approval',
-      itemsCount: 1,
-      subtotal: 7200,
-      tax: 864,
-      totalAmount: 8064,
-      items: [
-        { productId: 'PRD-002', productName: 'Polyester Yarn 150D/48F', qty: 40, uom: 'KG', rate: 180, amount: 7200 }
-      ]
-    }
-  ],
-  recentActivities: [
-    { id: 'ACT-01', code: 'INV-2081', party: 'XYZ Textiles', detail: '₹51,975 • Submitted for Approval', time: '10 mins ago', type: 'sales', status: 'Pending Approval' }
-  ],
-  notifications: [
-    { id: 'N1', title: 'Invoice Approval Needed', message: 'INV-2081 (₹51,975) for XYZ Textiles requires approval.', time: '10m ago', unread: true }
-  ]
+  parties: [],
+  itemTypes: [],
+  brands: [],
+  categories: { major: [], sub: [], subSub: [] },
+  uoms: [],
+  locations: [],
+  products: [],
+  batches: {},
+  purchaseOrders: [],
+  salesInvoices: [],
+  recentActivities: [],
+  notifications: []
 };
 
 const EMPTY_ERP_DATA = {
   parties: [],
-  itemTypes: [
-    { id: 'IT-01', name: 'Raw Material', code: 'RM' },
-    { id: 'IT-02', name: 'Finished Goods', code: 'FG' },
-    { id: 'IT-03', name: 'Semi-Finished Goods', code: 'SFG' },
-    { id: 'IT-04', name: 'Packing Material', code: 'PM' },
-    { id: 'IT-05', name: 'Trading Goods', code: 'TG' },
-    { id: 'IT-06', name: 'Services', code: 'SRV' }
-  ],
-  brands: [
-    { id: 'BR-01', name: 'Generic' }
-  ],
-  categories: {
-    major: [
-      { id: 'MJ-01', name: 'Yarn', code: 'YRN' },
-      { id: 'MJ-02', name: 'Fabric', code: 'FBC' },
-      { id: 'MJ-03', name: 'Trims & Accessories', code: 'TRM' }
-    ],
-    sub: [
-      { id: 'SB-01', majorId: 'MJ-01', name: 'Cotton Yarn' },
-      { id: 'SB-02', majorId: 'MJ-01', name: 'Synthetic Yarn' }
-    ],
-    subSub: [
-      { id: 'SSB-01', subId: 'SB-01', name: 'Combed Cotton' }
-    ]
-  },
-  uoms: [
-    { id: 'UOM-01', code: 'KG', name: 'Kilograms', decimalPlaces: 2 },
-    { id: 'UOM-02', code: 'MTR', name: 'Meters', decimalPlaces: 2 },
-    { id: 'UOM-03', code: 'PCS', name: 'Pieces', decimalPlaces: 0 },
-    { id: 'UOM-04', code: 'RLL', name: 'Rolls', decimalPlaces: 0 },
-    { id: 'UOM-05', code: 'BOX', name: 'Boxes', decimalPlaces: 0 }
-  ],
-  locations: [
-    { country: 'India', code: 'IN', states: ['Tamil Nadu', 'Gujarat', 'Maharashtra', 'Karnataka', 'Punjab', 'West Bengal', 'Rajasthan'] }
-  ],
+  itemTypes: [],
+  brands: [],
+  categories: { major: [], sub: [], subSub: [] },
+  uoms: [],
+  locations: [],
   products: [],
   batches: {},
   purchaseOrders: [],
@@ -593,6 +473,10 @@ function erpReducer(state, action) {
       };
       break;
     }
+    case 'SET_ALL_DATA': {
+      newState = { ...state, ...action.payload };
+      break;
+    }
     default:
       return state;
   }
@@ -638,6 +522,30 @@ export function ERPProvider({ children }) {
     }
   });
 
+  useEffect(() => {
+    if (!currentUser) return;
+    
+    const fetchAllData = async () => {
+      try {
+        const [parties, products, brands, uoms, itemTypes, pos, invs] = await Promise.all([
+          fetch('/api/parties').then(r => r.ok ? r.json() : []),
+          fetch('/api/products').then(r => r.ok ? r.json() : []),
+          fetch('/api/brands').then(r => r.ok ? r.json() : []),
+          fetch('/api/uoms').then(r => r.ok ? r.json() : []),
+          fetch('/api/itemtypes').then(r => r.ok ? r.json() : []),
+          fetch('/api/purchaseorders').then(r => r.ok ? r.json() : []),
+          fetch('/api/salesinvoices').then(r => r.ok ? r.json() : [])
+        ]);
+
+        dispatch({ type: 'SET_ALL_DATA', payload: { parties, products, brands, uoms, itemTypes, purchaseOrders: pos, salesInvoices: invs } });
+      } catch (err) {
+        console.error('Failed to fetch initial data:', err);
+      }
+    };
+    
+    fetchAllData();
+  }, [currentUser]);
+
   const loginUser = async (email, password) => {
     try {
       const res = await fetch('/api/auth/login', {
@@ -655,11 +563,8 @@ export function ERPProvider({ children }) {
       showToast('Welcome back', `Logged in as ${data.fullName}`);
       return { success: true, user: userObj };
     } catch (err) {
-      const userObj = { id: 1, fullName: email.split('@')[0] || 'Store Manager', companyName: 'My Enterprise', email, role: 'Store Manager', token: 'demo-token' };
-      setCurrentUser(userObj);
-      localStorage.setItem('PRIME_ERP_USER', JSON.stringify(userObj));
-      showToast('Logged in', `Logged in as ${userObj.fullName}`);
-      return { success: true, user: userObj };
+      showToast('Login Failed', err.message || 'Server error during login.', 'error');
+      throw err;
     }
   };
 
@@ -680,11 +585,8 @@ export function ERPProvider({ children }) {
       showToast('Account Created', `Welcome to PRIME ERP, ${data.fullName}!`);
       return { success: true, user: userObj };
     } catch (err) {
-      const userObj = { id: Date.now(), fullName: fullName || 'New User', companyName: companyName || 'My Enterprise', email, role: role || 'Store Manager', token: 'demo-token' };
-      setCurrentUser(userObj);
-      localStorage.setItem('PRIME_ERP_USER', JSON.stringify(userObj));
-      showToast('Account Created', `Welcome to PRIME ERP, ${userObj.fullName}!`);
-      return { success: true, user: userObj };
+      showToast('Registration Failed', err.message || 'Server error during registration.', 'error');
+      throw err;
     }
   };
 
@@ -695,15 +597,7 @@ export function ERPProvider({ children }) {
     showToast('Logged Out', 'You have been safely logged out.');
   };
 
-  const resetToMockData = () => {
-    dispatch({ type: 'RESET_DATA' });
-    showToast('Data Restored', 'Restored sample dataset.');
-  };
 
-  const clearAllData = () => {
-    dispatch({ type: 'CLEAR_ALL_DATA' });
-    showToast('Mock Data Cleared', 'Mock data cleared. Operating on clean slate.');
-  };
 
   const addParty = async (partyData) => {
     try {
@@ -722,9 +616,8 @@ export function ERPProvider({ children }) {
       showToast('Party Created', `${saved.name || partyData.name} created.`, 'success');
       return { success: true, party: saved };
     } catch (err) {
-      dispatch({ type: 'ADD_PARTY', payload: partyData });
-      showToast('Party Created', `${partyData.name} created.`, 'success');
-      return { success: true };
+      showToast('Creation Failed', err.message || 'Server error.', 'error');
+      return { success: false };
     }
   };
 
@@ -745,9 +638,8 @@ export function ERPProvider({ children }) {
       showToast('Product Created', `${saved.name || productData.name} created.`, 'success');
       return { success: true, product: saved };
     } catch (err) {
-      dispatch({ type: 'ADD_PRODUCT', payload: productData });
-      showToast('Product Created', `${productData.name} created.`, 'success');
-      return { success: true };
+      showToast('Creation Failed', err.message || 'Server error.', 'error');
+      return { success: false };
     }
   };
 
@@ -768,9 +660,8 @@ export function ERPProvider({ children }) {
       showToast('PO Generated', `Purchase Order ${saved.poId || ''} generated successfully.`, 'success');
       return { success: true, po: saved };
     } catch (err) {
-      dispatch({ type: 'CREATE_PO', payload: poData });
-      showToast('PO Generated', `Purchase Order generated.`, 'success');
-      return { success: true };
+      showToast('PO Creation Failed', err.message || 'Server error.', 'error');
+      return { success: false };
     }
   };
 
@@ -796,9 +687,8 @@ export function ERPProvider({ children }) {
       showToast('Invoice Submitted', `Invoice ${saved.invoiceId || ''} created and submitted for approval.`, 'success');
       return { success: true, invoice: saved };
     } catch (err) {
-      dispatch({ type: 'CREATE_INVOICE', payload: invData });
-      showToast('Invoice Submitted', `Invoice created and submitted for approval.`, 'success');
-      return { success: true };
+      showToast('Invoice Creation Failed', err.message || 'Server error.', 'error');
+      return { success: false };
     }
   };
 
@@ -829,64 +719,166 @@ export function ERPProvider({ children }) {
     return { success: true };
   };
 
-  const addItemType = (name, code) => {
-    dispatch({ type: 'ADD_ITEM_TYPE', payload: { name, code } });
-    showToast('Item Type Created', `Item type "${name}" created.`);
+  const addItemType = async (name, code) => {
+    try {
+      const res = await fetch('/api/itemtypes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, code })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const saved = await res.json();
+      dispatch({ type: 'ADD_ITEM_TYPE', payload: saved });
+      showToast('Item Type Created', `Item type "${name}" created.`);
+    } catch (err) {
+      showToast('Creation Failed', 'Could not create item type on server.', 'error');
+    }
   };
 
-  const deleteItemType = (id) => {
-    dispatch({ type: 'DELETE_ITEM_TYPE', payload: id });
-    showToast('Item Type Removed', `Item type deleted.`);
+  const deleteItemType = async (id) => {
+    try {
+      const res = await fetch(`/api/itemtypes/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Server error');
+      dispatch({ type: 'DELETE_ITEM_TYPE', payload: id });
+      showToast('Item Type Removed', `Item type deleted.`);
+    } catch (err) {
+      showToast('Deletion Failed', 'Could not delete item type on server.', 'error');
+    }
   };
 
-  const addBrand = (name) => {
-    dispatch({ type: 'ADD_BRAND', payload: { name } });
-    showToast('Brand Created', `Brand "${name}" created.`);
+  const addBrand = async (name) => {
+    try {
+      const res = await fetch('/api/brands', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const saved = await res.json();
+      dispatch({ type: 'ADD_BRAND', payload: saved });
+      showToast('Brand Created', `Brand "${name}" created.`);
+    } catch (err) {
+      showToast('Creation Failed', 'Could not create brand on server.', 'error');
+    }
   };
 
-  const deleteBrand = (id) => {
-    dispatch({ type: 'DELETE_BRAND', payload: id });
-    showToast('Brand Removed', `Brand deleted.`);
+  const deleteBrand = async (id) => {
+    try {
+      const res = await fetch(`/api/brands/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Server error');
+      dispatch({ type: 'DELETE_BRAND', payload: id });
+      showToast('Brand Removed', `Brand deleted.`);
+    } catch (err) {
+      showToast('Deletion Failed', 'Could not delete brand on server.', 'error');
+    }
   };
 
-  const addMajorCategory = (name, code) => {
-    dispatch({ type: 'ADD_MAJOR_CATEGORY', payload: { name, code } });
-    showToast('Major Group Created', `Major group "${name}" created.`);
+  const addMajorCategory = async (name, code) => {
+    try {
+      const res = await fetch('/api/categories/major', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, code })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const saved = await res.json();
+      dispatch({ type: 'ADD_MAJOR_CATEGORY', payload: saved });
+      showToast('Major Group Created', `Major group "${name}" created.`);
+    } catch (err) {
+      showToast('Creation Failed', 'Could not create category on server.', 'error');
+    }
   };
 
-  const deleteMajorCategory = (id) => {
-    dispatch({ type: 'DELETE_MAJOR_CATEGORY', payload: id });
-    showToast('Major Group Removed', `Major group deleted.`);
+  const deleteMajorCategory = async (id) => {
+    try {
+      const res = await fetch(`/api/categories/major/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Server error');
+      dispatch({ type: 'DELETE_MAJOR_CATEGORY', payload: id });
+      showToast('Major Group Removed', `Major group deleted.`);
+    } catch (err) {
+      showToast('Deletion Failed', 'Could not delete category on server.', 'error');
+    }
   };
 
-  const addSubCategory = (majorId, name) => {
-    dispatch({ type: 'ADD_SUB_CATEGORY', payload: { majorId, name } });
-    showToast('Sub Group Created', `Sub group "${name}" created.`);
+  const addSubCategory = async (majorId, name) => {
+    try {
+      const res = await fetch('/api/categories/sub', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ majorCategoryId: parseInt(majorId), name })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const saved = await res.json();
+      dispatch({ type: 'ADD_SUB_CATEGORY', payload: saved });
+      showToast('Sub Group Created', `Sub group "${name}" created.`);
+    } catch (err) {
+      showToast('Creation Failed', 'Could not create category on server.', 'error');
+    }
   };
 
-  const deleteSubCategory = (id) => {
-    dispatch({ type: 'DELETE_SUB_CATEGORY', payload: id });
-    showToast('Sub Group Removed', `Sub group deleted.`);
+  const deleteSubCategory = async (id) => {
+    try {
+      const res = await fetch(`/api/categories/sub/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Server error');
+      dispatch({ type: 'DELETE_SUB_CATEGORY', payload: id });
+      showToast('Sub Group Removed', `Sub group deleted.`);
+    } catch (err) {
+      showToast('Deletion Failed', 'Could not delete category on server.', 'error');
+    }
   };
 
-  const addSubSubCategory = (subId, name) => {
-    dispatch({ type: 'ADD_SUB_SUB_CATEGORY', payload: { subId, name } });
-    showToast('Sub-Sub Group Created', `Sub-Sub group "${name}" created.`);
+  const addSubSubCategory = async (subId, name) => {
+    try {
+      const res = await fetch('/api/categories/subsub', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subCategoryId: parseInt(subId), name })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const saved = await res.json();
+      dispatch({ type: 'ADD_SUB_SUB_CATEGORY', payload: saved });
+      showToast('Sub-Sub Group Created', `Sub-Sub group "${name}" created.`);
+    } catch (err) {
+      showToast('Creation Failed', 'Could not create category on server.', 'error');
+    }
   };
 
-  const deleteSubSubCategory = (id) => {
-    dispatch({ type: 'DELETE_SUB_SUB_CATEGORY', payload: id });
-    showToast('Sub-Sub Group Removed', `Sub-Sub group deleted.`);
+  const deleteSubSubCategory = async (id) => {
+    try {
+      const res = await fetch(`/api/categories/subsub/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Server error');
+      dispatch({ type: 'DELETE_SUB_SUB_CATEGORY', payload: id });
+      showToast('Sub-Sub Group Removed', `Sub-Sub group deleted.`);
+    } catch (err) {
+      showToast('Deletion Failed', 'Could not delete category on server.', 'error');
+    }
   };
 
-  const addUOM = (code, name, decimalPlaces = 2) => {
-    dispatch({ type: 'ADD_UOM', payload: { code, name, decimalPlaces } });
-    showToast('UOM Created', `Unit "${code}" created.`);
+  const addUOM = async (code, name, decimalPlaces = 2) => {
+    try {
+      const res = await fetch('/api/uoms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, name, decimalPlaces })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const saved = await res.json();
+      dispatch({ type: 'ADD_UOM', payload: saved });
+      showToast('UOM Created', `Unit "${code}" created.`);
+    } catch (err) {
+      showToast('Creation Failed', 'Could not create UOM on server.', 'error');
+    }
   };
 
-  const deleteUOM = (id) => {
-    dispatch({ type: 'DELETE_UOM', payload: id });
-    showToast('UOM Removed', `UOM deleted.`);
+  const deleteUOM = async (id) => {
+    try {
+      const res = await fetch(`/api/uoms/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Server error');
+      dispatch({ type: 'DELETE_UOM', payload: id });
+      showToast('UOM Removed', `UOM deleted.`);
+    } catch (err) {
+      showToast('Deletion Failed', 'Could not delete UOM on server.', 'error');
+    }
   };
 
   const value = {
@@ -898,8 +890,6 @@ export function ERPProvider({ children }) {
     toasts,
     showToast,
     removeToast,
-    resetToMockData,
-    clearAllData,
     addParty,
     addProduct,
     createPurchaseOrder,

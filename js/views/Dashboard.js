@@ -80,8 +80,8 @@
       // Header Banner
       React.createElement('div', { className: 'flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60' },
         React.createElement('div', null,
-          React.createElement('h1', { className: 'text-xl font-bold text-slate-900 tracking-tight' }, 'Good morning, Store Manager'),
-          React.createElement('p', { className: 'text-xs text-slate-500 mt-1 font-medium' }, `Operational overview for Prime Enterprise Pvt Ltd • ${todayStr}`)
+          React.createElement('h1', { className: 'text-xl font-bold text-slate-900 tracking-tight' }, `Good morning, ${(erp.currentUser && erp.currentUser.fullName) || 'User'}`),
+          React.createElement('p', { className: 'text-xs text-slate-500 mt-1 font-medium' }, `Operational overview for ${(erp.currentUser && erp.currentUser.companyName) || 'your company'} • ${todayStr}`)
         ),
         React.createElement('div', { className: 'flex items-center gap-2' },
           React.createElement(window.Button, { size: 'sm', variant: 'secondary', onClick: () => onNavigate('purchases') },
@@ -106,7 +106,7 @@
           ),
           React.createElement('div', { className: 'mt-2 flex items-baseline gap-2' },
             React.createElement('span', { className: 'text-2xl font-bold text-slate-900 tracking-tight font-mono' }, `₹${(totalPurchases / 100000).toFixed(2)}L`),
-            React.createElement('span', { className: 'text-xs text-emerald-600 font-semibold flex items-center' }, '↑ 12% vs last week')
+            React.createElement('span', { className: 'text-xs text-slate-400 font-semibold flex items-center' }, '—')
           )
         ),
 
@@ -120,7 +120,7 @@
           ),
           React.createElement('div', { className: 'mt-2 flex items-baseline gap-2' },
             React.createElement('span', { className: 'text-2xl font-bold text-slate-900 tracking-tight font-mono' }, `₹${(totalSales / 100000).toFixed(2)}L`),
-            React.createElement('span', { className: 'text-xs text-emerald-600 font-semibold flex items-center' }, '↑ 8% vs target')
+            React.createElement('span', { className: 'text-xs text-slate-400 font-semibold flex items-center' }, '—')
           )
         ),
 

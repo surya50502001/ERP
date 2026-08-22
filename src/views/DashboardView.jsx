@@ -85,8 +85,8 @@ export default function DashboardView({ onNavigate }) {
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Good morning, Store Manager</h1>
-          <p className="text-xs text-slate-500 mt-1 font-medium">Operational overview for Prime Enterprise Pvt Ltd • {todayStr}</p>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Good morning, {erp?.currentUser?.fullName || 'User'}</h1>
+          <p className="text-xs text-slate-500 mt-1 font-medium">Operational overview for {erp?.currentUser?.companyName || 'your company'} • {todayStr}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button size="sm" variant="secondary" onClick={() => onNavigate('purchases')}>
@@ -109,7 +109,7 @@ export default function DashboardView({ onNavigate }) {
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 tracking-tight font-mono">₹{(totalPurchases / 1000).toFixed(2)}L</span>
-            <span className="text-xs text-emerald-600 font-semibold flex items-center">↑ 12% vs last week</span>
+            <span className="text-xs text-slate-400 font-semibold flex items-center">—</span>
           </div>
         </div>
 
@@ -122,7 +122,7 @@ export default function DashboardView({ onNavigate }) {
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 tracking-tight font-mono">₹{(totalSales / 100000).toFixed(2)}L</span>
-            <span className="text-xs text-emerald-600 font-semibold flex items-center">↑ 8% vs target</span>
+            <span className="text-xs text-slate-400 font-semibold flex items-center">—</span>
           </div>
         </div>
 
