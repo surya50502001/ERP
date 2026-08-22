@@ -20,6 +20,7 @@ public class ErpDbContext : DbContext
     public DbSet<Batch> Batches => Set<Batch>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<RecentActivity> RecentActivities => Set<RecentActivity>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

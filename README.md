@@ -1,6 +1,11 @@
 # Prime ERP - Premium Business ERP Frontend
 
-A complete, production-quality React ERP frontend UI designed with a modern Linear/Stripe/Vercel SaaS aesthetic.
+A complete, production-quality React ERP application backed by an ASP.NET Core 8 Web API and PostgreSQL database, designed with a modern SaaS aesthetic.
+
+## 📐 Engineering Standard & Architecture Guidelines
+
+All development on this project follows the official **[ERP Golden Path & Architecture Guidelines](docs/ERP-GOLDEN-PATH.md)**.
+Developers implementing new Masters, Transactions, APIs, or UI screens must follow the established Golden Path patterns documented in [`docs/ERP-GOLDEN-PATH.md`](docs/ERP-GOLDEN-PATH.md).
 
 ## 🚀 Features
 
