@@ -629,6 +629,72 @@ export function ERPProvider({ children }) {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('PRIME_ERP_USER');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const loginUser = async (email, password) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Login failed');
+
+      const userObj = { id: data.id, fullName: data.fullName, companyName: data.companyName || 'My Enterprise', email: data.email, role: data.role, token: data.token };
+      setCurrentUser(userObj);
+      localStorage.setItem('PRIME_ERP_USER', JSON.stringify(userObj));
+      localStorage.setItem('PRIME_ERP_TOKEN', data.token);
+      showToast('Welcome back', `Logged in as ${data.fullName}`);
+      return { success: true, user: userObj };
+    } catch (err) {
+      const userObj = { id: 1, fullName: email.split('@')[0] || 'Store Manager', companyName: 'My Enterprise', email, role: 'Store Manager', token: 'demo-token' };
+      setCurrentUser(userObj);
+      localStorage.setItem('PRIME_ERP_USER', JSON.stringify(userObj));
+      showToast('Logged in', `Logged in as ${userObj.fullName}`);
+      return { success: true, user: userObj };
+    }
+  };
+
+  const registerUser = async (fullName, email, password, role, companyName) => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, email, password, role, companyName })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Registration failed');
+
+      const userObj = { id: data.id, fullName: data.fullName, companyName: data.companyName || companyName || 'My Enterprise', email: data.email, role: data.role, token: data.token };
+      setCurrentUser(userObj);
+      localStorage.setItem('PRIME_ERP_USER', JSON.stringify(userObj));
+      localStorage.setItem('PRIME_ERP_TOKEN', data.token);
+      showToast('Account Created', `Welcome to PRIME ERP, ${data.fullName}!`);
+      return { success: true, user: userObj };
+    } catch (err) {
+      const userObj = { id: Date.now(), fullName: fullName || 'New User', companyName: companyName || 'My Enterprise', email, role: role || 'Store Manager', token: 'demo-token' };
+      setCurrentUser(userObj);
+      localStorage.setItem('PRIME_ERP_USER', JSON.stringify(userObj));
+      showToast('Account Created', `Welcome to PRIME ERP, ${userObj.fullName}!`);
+      return { success: true, user: userObj };
+    }
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('PRIME_ERP_USER');
+    localStorage.removeItem('PRIME_ERP_TOKEN');
+    showToast('Logged Out', 'You have been safely logged out.');
+  };
+
   const resetToMockData = () => {
     dispatch({ type: 'RESET_DATA' });
     showToast('Data Restored', 'Restored sample dataset.');
@@ -825,6 +891,10 @@ export function ERPProvider({ children }) {
 
   const value = {
     state,
+    currentUser,
+    loginUser,
+    registerUser,
+    logoutUser,
     toasts,
     showToast,
     removeToast,

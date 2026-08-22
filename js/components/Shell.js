@@ -163,18 +163,18 @@
                   },
                   className: 'flex items-center gap-2.5 p-1 rounded-lg hover:bg-slate-100 transition-colors'
                 },
-                  React.createElement('div', { className: 'w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center border border-slate-300' }, 'ST'),
+                  React.createElement('div', { className: 'w-7 h-7 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center border border-slate-700' }, ((erp.currentUser && erp.currentUser.companyName) || 'EP').substring(0, 2).toUpperCase()),
                   React.createElement('div', { className: 'text-left hidden md:block' },
-                    React.createElement('span', { className: 'text-xs font-semibold text-slate-800 block leading-tight' }, 'Sri Lakshmi Fabrics'),
-                    React.createElement('span', { className: 'text-[10px] text-slate-500 block' }, 'Store Manager')
+                    React.createElement('span', { className: 'text-xs font-semibold text-slate-800 block leading-tight' }, (erp.currentUser && erp.currentUser.companyName) || 'My Enterprise'),
+                    React.createElement('span', { className: 'text-[10px] text-slate-500 block' }, (erp.currentUser && erp.currentUser.fullName) || 'Store Manager')
                   ),
                   React.createElement(window.Icon, { name: 'ChevronDown', className: 'w-3.5 h-3.5 text-slate-400' })
                 ),
 
                 showProfile && React.createElement('div', { className: 'absolute right-0 mt-2 w-56 rounded-xl bg-white border border-slate-200 shadow-xl z-50 p-2 text-xs space-y-1 animate-in fade-in zoom-in-95' },
                   React.createElement('div', { className: 'px-3 py-2 border-b border-slate-100' },
-                    React.createElement('p', { className: 'font-semibold text-slate-900' }, 'Sri Lakshmi Fabrics Pvt Ltd'),
-                    React.createElement('p', { className: 'text-[10px] text-slate-500 mt-0.5 font-mono' }, 'GSTIN: 33AAACS1234F1Z9')
+                    React.createElement('p', { className: 'font-semibold text-slate-900' }, (erp.currentUser && erp.currentUser.companyName) || 'My Enterprise'),
+                    React.createElement('p', { className: 'text-[10px] text-slate-500 mt-0.5 font-mono' }, (erp.currentUser && erp.currentUser.fullName) || 'Store Manager')
                   ),
                   React.createElement('button', { onClick: () => { onNavigate('settings'); setShowProfile(false); }, className: 'w-full text-left px-3 py-1.5 rounded-md hover:bg-slate-100 flex items-center gap-2 text-slate-700' },
                     React.createElement(window.Icon, { name: 'Settings', className: 'w-3.5 h-3.5' }), 'System Settings'

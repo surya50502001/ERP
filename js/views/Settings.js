@@ -2,8 +2,8 @@
   const { useState } = React;
 
   window.SettingsView = function ({ onNavigate }) {
-    const { showToast, resetToMockData } = window.useERP();
-    const [companyName, setCompanyName] = useState('Sri Lakshmi Fabrics Pvt Ltd');
+    const { currentUser, showToast, resetToMockData } = window.useERP();
+    const [companyName, setCompanyName] = useState((currentUser && currentUser.companyName) || 'My Enterprise');
     const [gstin, setGstin] = useState('33AAACS1234F1Z9');
     const [address, setAddress] = useState('104 Cross Cut Road, Gandhipuram, Coimbatore');
     const [currency, setCurrency] = useState('₹ (INR)');
