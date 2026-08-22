@@ -29,7 +29,23 @@ public class PurchaseOrdersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<PurchaseOrder>> Create([FromBody] PurchaseOrder po)
     {
+        if (string.IsNullOrWhiteSpace(po.PoId) || po.PoId.StartsWith("PO-TEMP"))
+        {
+            var count = await _db.PurchaseOrders.CountAsync() + 1;
+            po.PoId = $"PO-{DateTime.UtcNow.Year}-{count:D5}";
+        }
+
         _db.PurchaseOrders.Add(po);
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "PurchaseOrder",
+            Action = "CREATE",
+            EntityId = po.PoId,
+            Details = $"Purchase Order created for supplier {po.SupplierName}.",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(Get), new { id = po.Id }, po);
     }
@@ -39,8 +55,20 @@ public class PurchaseOrdersController : ControllerBase
     {
         var existing = await _db.PurchaseOrders.FindAsync(id);
         if (existing == null) return NotFound();
+
         existing.Status = updated.Status;
         existing.GrnId = updated.GrnId;
+
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "PurchaseOrder",
+            Action = "UPDATE",
+            EntityId = existing.PoId ?? existing.Id.ToString(),
+            Details = $"Status updated to {updated.Status}, GRN: {updated.GrnId}",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return NoContent();
     }
@@ -50,6 +78,17 @@ public class PurchaseOrdersController : ControllerBase
     {
         var po = await _db.PurchaseOrders.FindAsync(id);
         if (po == null) return NotFound();
+
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "PurchaseOrder",
+            Action = "DELETE",
+            EntityId = po.PoId ?? po.Id.ToString(),
+            Details = $"Deleted PO {po.PoId} for {po.SupplierName}",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         _db.PurchaseOrders.Remove(po);
         await _db.SaveChangesAsync();
         return NoContent();

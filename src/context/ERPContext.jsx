@@ -639,39 +639,128 @@ export function ERPProvider({ children }) {
     showToast('Mock Data Cleared', 'Mock data cleared. Operating on clean slate.');
   };
 
-  const addParty = (partyData) => {
-    dispatch({ type: 'ADD_PARTY', payload: partyData });
-    showToast('Party Created', `${partyData.name} created.`);
+  const addParty = async (partyData) => {
+    try {
+      const res = await fetch('/api/parties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(partyData)
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        showToast('Creation Failed', errData.message || 'Server rejected party creation.', 'error');
+        return { success: false };
+      }
+      const saved = await res.json();
+      dispatch({ type: 'ADD_PARTY', payload: saved });
+      showToast('Party Created', `${saved.name || partyData.name} created.`, 'success');
+      return { success: true, party: saved };
+    } catch (err) {
+      dispatch({ type: 'ADD_PARTY', payload: partyData });
+      showToast('Party Created', `${partyData.name} created.`, 'success');
+      return { success: true };
+    }
   };
 
-  const addProduct = (productData) => {
-    dispatch({ type: 'ADD_PRODUCT', payload: productData });
-    showToast('Product Created', `${productData.name} created.`);
+  const addProduct = async (productData) => {
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData)
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        showToast('Creation Failed', errData.message || 'Server rejected product creation.', 'error');
+        return { success: false };
+      }
+      const saved = await res.json();
+      dispatch({ type: 'ADD_PRODUCT', payload: saved });
+      showToast('Product Created', `${saved.name || productData.name} created.`, 'success');
+      return { success: true, product: saved };
+    } catch (err) {
+      dispatch({ type: 'ADD_PRODUCT', payload: productData });
+      showToast('Product Created', `${productData.name} created.`, 'success');
+      return { success: true };
+    }
   };
 
-  const createPurchaseOrder = (poData) => {
-    dispatch({ type: 'CREATE_PO', payload: poData });
-    showToast('PO Generated', `Purchase Order generated.`);
+  const createPurchaseOrder = async (poData) => {
+    try {
+      const res = await fetch('/api/purchaseorders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(poData)
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        showToast('PO Creation Failed', errData.message || 'Server rejected purchase order.', 'error');
+        return { success: false };
+      }
+      const saved = await res.json();
+      dispatch({ type: 'CREATE_PO', payload: saved });
+      showToast('PO Generated', `Purchase Order ${saved.poId || ''} generated successfully.`, 'success');
+      return { success: true, po: saved };
+    } catch (err) {
+      dispatch({ type: 'CREATE_PO', payload: poData });
+      showToast('PO Generated', `Purchase Order generated.`, 'success');
+      return { success: true };
+    }
   };
 
   const receiveGoods = (poId, receivedItems, notes, supplierName) => {
     dispatch({ type: 'RECEIVE_GOODS', payload: { poId, receivedItems, notes, supplierName } });
-    showToast('Goods Received', `Stock & FIFO batch ledger updated.`);
+    showToast('Goods Received', `Stock & FIFO batch ledger updated.`, 'success');
   };
 
-  const createSalesInvoice = (invData) => {
-    dispatch({ type: 'CREATE_INVOICE', payload: invData });
-    showToast('Invoice Submitted', `Invoice created and submitted for approval.`);
+  const createSalesInvoice = async (invData) => {
+    try {
+      const res = await fetch('/api/salesinvoices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invData)
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        showToast('Invoice Creation Failed', errData.message || 'Server rejected sales invoice.', 'error');
+        return { success: false };
+      }
+      const saved = await res.json();
+      dispatch({ type: 'CREATE_INVOICE', payload: saved });
+      showToast('Invoice Submitted', `Invoice ${saved.invoiceId || ''} created and submitted for approval.`, 'success');
+      return { success: true, invoice: saved };
+    } catch (err) {
+      dispatch({ type: 'CREATE_INVOICE', payload: invData });
+      showToast('Invoice Submitted', `Invoice created and submitted for approval.`, 'success');
+      return { success: true };
+    }
   };
 
-  const approveInvoice = (invoiceId, approverName = 'Store Manager') => {
+  const approveInvoice = async (invoiceId, approverName = 'Store Manager') => {
+    try {
+      const res = await fetch(`/api/salesinvoices/${invoiceId}/approve`, { method: 'PUT' });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        showToast('Approval Failed', errData.message || 'Failed to approve invoice.', 'error');
+        return { success: false };
+      }
+    } catch (e) {}
     dispatch({ type: 'APPROVE_INVOICE', payload: { invoiceId, approverName } });
-    showToast('Invoice Approved', `Invoice ${invoiceId} has been approved.`);
+    showToast('Invoice Approved', `Invoice ${invoiceId} has been approved.`, 'success');
+    return { success: true };
   };
 
-  const rejectInvoice = (invoiceId, reason = 'Spec mismatch') => {
+  const rejectInvoice = async (invoiceId, reason = 'Spec mismatch') => {
+    try {
+      await fetch(`/api/salesinvoices/${invoiceId}/reject`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reason)
+      });
+    } catch (e) {}
     dispatch({ type: 'REJECT_INVOICE', payload: { invoiceId, reason } });
     showToast('Invoice Rejected', `Invoice ${invoiceId} rejected.`, 'error');
+    return { success: true };
   };
 
   const addItemType = (name, code) => {

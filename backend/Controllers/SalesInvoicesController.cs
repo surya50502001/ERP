@@ -35,16 +35,32 @@ public class SalesInvoicesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<SalesInvoice>> Create([FromBody] SalesInvoice inv)
     {
+        if (string.IsNullOrWhiteSpace(inv.InvoiceId) || inv.InvoiceId.StartsWith("INV-TEMP"))
+        {
+            var count = await _db.SalesInvoices.CountAsync() + 1;
+            inv.InvoiceId = $"INV-{DateTime.UtcNow.Year}-{count:D5}";
+        }
         inv.Status = "Pending Approval";
+
         inv.Activity.Add(new SalesInvoiceActivity
         {
             Date = DateTime.UtcNow,
-            User = "Admin",
+            User = "System User",
             Title = "Submitted for Approval",
             Detail = $"Invoice {inv.InvoiceId} submitted for review."
         });
 
         _db.SalesInvoices.Add(inv);
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "SalesInvoice",
+            Action = "CREATE",
+            EntityId = inv.InvoiceId,
+            Details = $"Sales Invoice created for customer {inv.CustomerName} with total ₹{inv.TotalAmount:F2}.",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(Get), new { id = inv.Id }, inv);
     }
@@ -66,6 +82,16 @@ public class SalesInvoicesController : ControllerBase
             Detail = $"Invoice {inv.InvoiceId} has been approved."
         });
 
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "SalesInvoice",
+            Action = "APPROVE",
+            EntityId = inv.InvoiceId ?? inv.Id.ToString(),
+            Details = $"Approved invoice for customer {inv.CustomerName}",
+            PerformedBy = "Store Manager",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return Ok(inv);
     }
@@ -85,6 +111,16 @@ public class SalesInvoicesController : ControllerBase
             User = "Store Manager",
             Title = "Invoice Rejected",
             Detail = $"Invoice {inv.InvoiceId} rejected: {reason}"
+        });
+
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "SalesInvoice",
+            Action = "REJECT",
+            EntityId = inv.InvoiceId ?? inv.Id.ToString(),
+            Details = $"Rejected invoice: {reason}",
+            PerformedBy = "Store Manager",
+            Timestamp = DateTime.UtcNow
         });
 
         await _db.SaveChangesAsync();

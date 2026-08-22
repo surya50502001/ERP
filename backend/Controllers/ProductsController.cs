@@ -29,7 +29,23 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Product>> Create([FromBody] Product product)
     {
+        if (string.IsNullOrWhiteSpace(product.ProductId) || product.ProductId.StartsWith("ITM-TEMP"))
+        {
+            var count = await _db.Products.CountAsync() + 1;
+            product.ProductId = $"ITM{count:D6}";
+        }
+
         _db.Products.Add(product);
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "Product",
+            Action = "CREATE",
+            EntityId = product.ProductId,
+            Details = $"Created item master '{product.Name}' ({product.ProductId})",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
     }
@@ -59,6 +75,16 @@ public class ProductsController : ControllerBase
         existing.Status = updated.Status;
         existing.Description = updated.Description;
 
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "Product",
+            Action = "UPDATE",
+            EntityId = existing.ProductId ?? id.ToString(),
+            Details = $"Updated item master details for '{existing.Name}'",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return NoContent();
     }
@@ -68,6 +94,17 @@ public class ProductsController : ControllerBase
     {
         var prod = await _db.Products.FindAsync(id);
         if (prod == null) return NotFound();
+
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "Product",
+            Action = "DELETE",
+            EntityId = prod.ProductId ?? id.ToString(),
+            Details = $"Deleted item master '{prod.Name}'",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         _db.Products.Remove(prod);
         await _db.SaveChangesAsync();
         return NoContent();

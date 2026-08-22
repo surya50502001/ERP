@@ -29,7 +29,23 @@ public class PartiesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Party>> Create([FromBody] Party party)
     {
+        if (string.IsNullOrWhiteSpace(party.PartyId) || party.PartyId.StartsWith("PTY-TEMP"))
+        {
+            var count = await _db.Parties.CountAsync() + 1;
+            party.PartyId = $"PTY{count:D6}";
+        }
+
         _db.Parties.Add(party);
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "Party",
+            Action = "CREATE",
+            EntityId = party.PartyId,
+            Details = $"Created party '{party.Name}'",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(Get), new { id = party.Id }, party);
     }
@@ -39,13 +55,24 @@ public class PartiesController : ControllerBase
     {
         var existing = await _db.Parties.FindAsync(id);
         if (existing == null) return NotFound();
-        // Update mutable fields
+
         existing.PartyId = updated.PartyId;
         existing.Name = updated.Name;
         existing.Status = updated.Status;
         existing.ContactNumber = updated.ContactNumber;
         existing.Email = updated.Email;
         existing.Address = updated.Address;
+
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "Party",
+            Action = "UPDATE",
+            EntityId = existing.PartyId ?? id.ToString(),
+            Details = $"Updated party master '{existing.Name}'",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
         return NoContent();
     }
@@ -55,6 +82,17 @@ public class PartiesController : ControllerBase
     {
         var party = await _db.Parties.FindAsync(id);
         if (party == null) return NotFound();
+
+        _db.AuditLogs.Add(new AuditLog
+        {
+            EntityName = "Party",
+            Action = "DELETE",
+            EntityId = party.PartyId ?? id.ToString(),
+            Details = $"Deleted party master '{party.Name}'",
+            PerformedBy = "System User",
+            Timestamp = DateTime.UtcNow
+        });
+
         _db.Parties.Remove(party);
         await _db.SaveChangesAsync();
         return NoContent();
